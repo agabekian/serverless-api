@@ -1,19 +1,26 @@
+const dynamoose = require('dynamoose');
+const schema = new dynamoose.Schema({
+    "id": String,
+    "name": String
+});
 exports.handler = async (event) => {
     console.log("BODY", event.body);
 
-    const response = { statusCode: null, body: null };
+// Define model
+    const peopleModel = dynamoose.model('people', schema);
+    const response = {statusCode: null, body: null};
 
     try {
         if (event.pathParameters && event.pathParameters.id) {
             // Fetch specific person by id
             const id = event.pathParameters.id;
-            let result = await peopleModel.get({ id });
+            let result = await peopleModel.get({id});
 
             if (result) {
                 response.body = JSON.stringify(result);
                 response.statusCode = 200;
             } else {
-                response.body = JSON.stringify({ message: "Person not found" });
+                response.body = JSON.stringify({message: "Person not found"});
                 response.statusCode = 404;
             }
         } else {
@@ -23,7 +30,7 @@ exports.handler = async (event) => {
             response.statusCode = 200;
         }
     } catch (e) {
-        response.body = JSON.stringify({ message: e.message });
+        response.body = JSON.stringify({message: e.message});
         response.statusCode = 500;
     }
 
